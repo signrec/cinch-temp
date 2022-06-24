@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "790712095553",
+    "firebase_url": "https://cinch-3c98c-default-rtdb.firebaseio.com",
+    "project_id": "cinch-3c98c",
+    "storage_bucket": "cinch-3c98c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790712095553:android:5d9c861c964cd8779fc7c0",
+        "android_client_info": {
+          "package_name": "com.signrecognition.cinch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "790712095553-tp0seb4g8ufn44lcbonr6lnpctvi64tf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmE4Ft6ns3hnkgD2O7Ekwxq407iNiYU5o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "790712095553-tp0seb4g8ufn44lcbonr6lnpctvi64tf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
