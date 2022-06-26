@@ -13,30 +13,32 @@ class OpenCamera extends StatefulWidget {
 class _OpenCameraState extends State<OpenCamera> {
   bool isWorking = false;
   String output = "";
-  CameraImage? imgCamera;
+  CameraImage? cameraImage;
 
   late CameraController cameraController;
   @override
   void initState() {
     super.initState();
     loadmodel();
+    initCamera();
   }
 
   @override
   void dispose() async {
     super.dispose();
-    await Tflite.close();
-    cameraController.dispose();
+    cameraController.stopImageStream();
+    Tflite.close();
   }
 
-  loadmodel() async {
+  Future loadmodel() async {
+    Tflite.close();
     await Tflite.loadModel(
         model: "assets/model.tflite", labels: "assets/model.txt");
   }
 
   initCamera() {
     cameraController =
-        CameraController(widget.cameras![0], ResolutionPreset.medium);
+        CameraController(widget.cameras![0], ResolutionPreset.max);
     cameraController.initialize().then((_) {
       if (!mounted) {
         return;
@@ -44,7 +46,7 @@ class _OpenCameraState extends State<OpenCamera> {
       setState(() {
         cameraController.startImageStream((imageFromStream) => {
               if (!isWorking)
-                {isWorking = true, imgCamera = imageFromStream, runModel()}
+                {isWorking = true, cameraImage = imageFromStream, runModel()}
             });
       });
     });
@@ -53,16 +55,16 @@ class _OpenCameraState extends State<OpenCamera> {
   runModel() async {
     {
       var recognitions = await Tflite.runModelOnFrame(
-          bytesList: imgCamera!.planes.map((plane) {
+          bytesList: cameraImage!.planes.map((plane) {
             return plane.bytes;
           }).toList(),
-          imageHeight: imgCamera!.height,
-          imageWidth: imgCamera!.width,
+          imageHeight: cameraImage!.height,
+          imageWidth: cameraImage!.width,
           imageMean: 127.5,
           imageStd: 127.5,
-          // rotation: 90,
-          numResults: 2,
-          threshold: 0.1,
+          rotation: 90,
+          numResults: 1,
+          threshold: 0.4,
           asynch: true);
       output = "";
       recognitions?.forEach((response) {
@@ -82,7 +84,7 @@ class _OpenCameraState extends State<OpenCamera> {
       home: SafeArea(
         child: Scaffold(
             body: Container(
-          color: Colors.blue,
+          color: Colors.black,
           child: Center(
             child: Column(
               children: [
@@ -90,23 +92,9 @@ class _OpenCameraState extends State<OpenCamera> {
                   children: [
                     Center(
                       child: Container(
-                        color: Colors.black,
-                        height: 600,
-                        width: 360,
-                      ),
-                    ),
-                    Center(
-                      child: ElevatedButton(
-                          onPressed: (() => {initCamera()}),
-                          child: imgCamera == null
-                              ? Container(
-                                  color: const Color(0xff121421),
-                                  height: 400,
-                                  width: 300,
-                                  child: const Icon(Icons.start, size: 40))
-                              : AspectRatio(
-                                  aspectRatio: 3 / 4,
-                                  child: CameraPreview(cameraController))),
+                          child: cameraImage == null
+                              ? Container()
+                              : CameraPreview(cameraController)),
                     )
                   ],
                 ),
@@ -120,7 +108,7 @@ class _OpenCameraState extends State<OpenCamera> {
                                   fontSize: 30.0,
                                   color: Colors.white),
                               textAlign: TextAlign.center))),
-                )
+                ),
               ],
             ),
           ),
